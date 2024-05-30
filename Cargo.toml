@@ -5,9 +5,9 @@ edition = "2021"
 
 [dependencies]
 
-[[bin]]
+[[example]]
 name = "calc"
-path = "src/calc.rs"
+path = "examples/calc.rs"
 
 [features]
 default = []
