@@ -193,8 +193,15 @@ mod tests {
     use super::*;
 
     #[test]
-    fn test_queue_new() {
+    fn test_queue_default() {
         let queue: Queue<i32> = Queue::default();
+        assert_eq!(queue.is_empty(), true);
+        assert_eq!(queue.len(), 0);
+    }
+
+    #[test]
+    fn test_queue_new() {
+        let queue: Queue<i32> = Queue::new();
         assert_eq!(queue.is_empty(), true);
         assert_eq!(queue.len(), 0);
     }
