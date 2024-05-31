@@ -1,7 +1,6 @@
-pub mod stack;
-pub mod static_stack;
-pub mod queue;
+pub mod ds;
+pub mod alg;
+pub mod math;
 
-pub use stack::Stack;
-pub use queue::Queue;
-pub use static_stack::StaticStack;
+pub use ds::Stack;
+pub use ds::Queue;
