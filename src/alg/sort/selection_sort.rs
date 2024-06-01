@@ -7,7 +7,7 @@
 /// # Examples
 /// 
 /// ```
-/// use std_only::SelectionSort;
+/// use studylib::alg::sort::SelectionSort;
 /// 
 /// let mut arr = [4, 2, 3, 1];
 /// arr.selection_sort(true);

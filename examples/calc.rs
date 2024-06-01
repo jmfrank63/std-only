@@ -1,7 +1,7 @@
 use std::{env, process::exit};
 
-use std_only::Stack;
 use std::str::FromStr;
+use studylib::ds::stacks::stack::Stack;
 
 enum Operation {
     Add,
@@ -24,7 +24,7 @@ fn perform_operation(stack: &mut Stack<i32>, operation: Operation) {
                 exit(0);
             }
             b / a
-        },
+        }
     };
 
     stack.push(result);

@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "std-only"
+name = "studylib"
 version = "0.1.0"

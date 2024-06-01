@@ -18,7 +18,7 @@ impl Default for HeapType {
     /// Examples
     ///
     /// ```
-    /// use std_only::ds::HeapType;
+    /// use studylib::ds::heaps::heap::HeapType;
     ///
     /// let heap_type: HeapType = HeapType::default();
     /// assert_eq!(heap_type, HeapType::Min);
@@ -35,7 +35,7 @@ impl Default for HeapType {
 /// # Examples
 ///
 /// ```
-/// use std_only::ds::{Heap, HeapType};
+/// use studylib::ds::heaps::heap::{Heap, HeapType};
 ///
 /// let mut heap = Heap::new(HeapType::Min);
 /// heap.push(1);
@@ -58,7 +58,7 @@ impl<T: Clone> Default for Heap<T> {
     /// Examples
     ///
     /// ```
-    /// use std_only::ds::Heap;
+    /// use studylib::ds::heaps::heap::Heap;
     ///
     /// let mut heap: Heap<i32> = Heap::default();
     /// assert!(heap.is_empty());
@@ -77,7 +77,7 @@ impl<T: Ord + Clone> Heap<T> {
     /// Examples
     ///
     /// ```
-    /// use std_only::ds::{Heap, HeapType};
+    /// use studylib::ds::heaps::heap::{Heap, HeapType};
     ///
     /// let mut heap: Heap<i32> = Heap::new(HeapType::Min);
     /// assert!(heap.is_empty());
@@ -94,7 +94,7 @@ impl<T: Ord + Clone> Heap<T> {
     /// Examples
     ///
     /// ```
-    /// use std_only::ds::{Heap, HeapType};
+    /// use studylib::ds::heaps::heap::{Heap, HeapType};
     ///
     /// let mut heap = Heap::new(HeapType::Min);
     /// heap.push(1);
@@ -148,7 +148,7 @@ impl<T: Ord + Clone> Heap<T> {
     /// # Examples
     ///
     /// ```
-    /// use std_only::ds::{Heap, HeapType};
+    /// use studylib::ds::heaps::heap::{Heap, HeapType};
     ///
     /// let mut heap = Heap::new(HeapType::Min);
     /// heap.push_all_from_array(&[1, 2, 3]);
@@ -169,7 +169,7 @@ impl<T: Ord + Clone> Heap<T> {
     /// # Examples
     ///
     /// ```
-    /// use std_only::ds::{Heap, HeapType};
+    /// use studylib::ds::heaps::heap::{Heap, HeapType};
     ///
     /// let mut heap = Heap::new(HeapType::Min);
     /// heap.push_all_from_vec(vec![1, 2, 3]);
@@ -186,7 +186,7 @@ impl<T: Ord + Clone> Heap<T> {
     /// Examples
     ///
     /// ```
-    /// use std_only::ds::{Heap, HeapType};
+    /// use studylib::ds::heaps::heap::{Heap, HeapType};
     ///
     /// let mut heap = Heap::new(HeapType::Min);
     /// heap.push(1);
@@ -279,7 +279,7 @@ impl<T: Ord + Clone> Heap<T> {
     /// # Examples
     ///
     /// ```
-    /// use std_only::ds::{Heap, HeapType};
+    /// use studylib::ds::heaps::heap::{Heap, HeapType};
     ///
     /// let mut heap = Heap::new(HeapType::Min);
     /// heap.push(1);
@@ -306,7 +306,7 @@ impl<T: Ord + Clone> Heap<T> {
     /// Examples
     ///
     /// ```
-    /// use std_only::ds::{Heap, HeapType};
+    /// use studylib::ds::heaps::heap::{Heap, HeapType};
     ///
     /// let mut heap = Heap::new(HeapType::Min);
     /// heap.push(1);
@@ -321,7 +321,7 @@ impl<T: Ord + Clone> Heap<T> {
     /// Examples
     ///
     /// ```
-    /// use std_only::ds::{Heap, HeapType};
+    /// use studylib::ds::heaps::heap::{Heap, HeapType};
     ///
     /// let mut heap = Heap::new(HeapType::Min);
     /// heap.push(1);
@@ -341,7 +341,7 @@ impl<T: Ord + Clone> Heap<T> {
     /// Examples
     ///
     /// ```
-    /// use std_only::ds::{Heap, HeapType};
+    /// use studylib::ds::heaps::heap::{Heap, HeapType};
     ///
     /// let mut heap = Heap::new(HeapType::Max);
     /// heap.push(1);
@@ -379,7 +379,7 @@ impl<T: Ord + Clone> Heap<T> {
     /// # Examples
     ///
     /// ```
-    /// use std_only::ds::{Heap,HeapType};
+    /// use studylib::ds::heaps::heap::{Heap,HeapType};
     ///
     /// let heap = Heap::from_array(HeapType::Min, &[1, 2, 3]);
     /// assert_eq!(heap.len(), 3);
@@ -406,7 +406,7 @@ impl<T: Ord + Clone> Heap<T> {
     /// # Examples
     ///
     /// ```
-    /// use std_only::ds::{Heap,HeapType};
+    /// use studylib::ds::heaps::heap::{Heap,HeapType};
     ///
     /// let heap = Heap::from_vec(HeapType::Min, vec![1, 2, 3]);
     /// assert_eq!(heap.len(), 3);
@@ -429,7 +429,7 @@ impl<T: Ord + Clone> Heap<T> {
     /// # Examples
     ///
     /// ```
-    /// use std_only::ds::{Heap, HeapType};
+    /// use studylib::ds::heaps::heap::{Heap, HeapType};
     ///
     /// let mut heap = Heap::new(HeapType::Min);
     /// heap.push(3);
@@ -756,5 +756,4 @@ mod tests {
         let popped = heap.pop_multiple(5);
         assert_eq!(popped, vec![1, 2, 3]);
     }
-
 }

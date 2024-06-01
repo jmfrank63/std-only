@@ -1,4 +1,3 @@
-
 // Contents:
 // - Stack struct
 // - Implementation of Stack
@@ -7,12 +6,12 @@
 /// A Stack data structure.
 ///
 /// A stack is a data structure that allows elements to be added and removed in a last-in-first-out (LIFO) order.
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```
-/// use std_only::Stack;
-/// 
+/// use studylib::ds::stacks::stack::Stack;
+///
 /// let mut stack = Stack::new(10);
 /// stack.push(1);
 /// stack.push(2);
@@ -35,7 +34,7 @@ impl<T: Clone> Default for Stack<T> {
     /// Examples
     ///
     /// ```
-    /// use std_only::Stack;
+    /// use studylib::ds::stacks::stack::Stack;
     ///
     /// let mut stack: Stack<i32> = Stack::default();
     /// assert!(stack.is_empty());
@@ -57,7 +56,7 @@ impl<T: Clone> Stack<T> {
     /// # Examples
     ///
     /// ```
-    /// use std_only::Stack;
+    /// use studylib::ds::stacks::stack::Stack;
     ///
     /// let mut stack: Stack<i32> = Stack::new(10);
     /// assert_eq!(stack.get_capacity(), 10);
@@ -77,7 +76,7 @@ impl<T: Clone> Stack<T> {
     /// # Examples
     ///
     /// ```
-    /// use std_only::Stack;
+    /// use studylib::ds::stacks::stack::Stack;
     ///
     /// let mut stack = Stack::new(10);
     /// stack.push(1);
@@ -96,7 +95,7 @@ impl<T: Clone> Stack<T> {
     /// # Examples
     ///
     /// ```
-    /// use std_only::Stack;
+    /// use studylib::ds::stacks::stack::Stack;
     ///
     /// let mut stack = Stack::new(10);
     /// assert_eq!(stack.pop(), None);
@@ -109,19 +108,19 @@ impl<T: Clone> Stack<T> {
     }
 
     /// Peeks at the top element of the Stack.
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// * `Option<&T>` - A reference to the top element of the Stack, or None if the Stack is empty.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
-    /// use std_only::Stack;
-    /// 
+    /// use studylib::ds::stacks::stack::Stack;
+    ///
     /// let mut stack = Stack::new(10);
     /// assert_eq!(stack.peek(), None);
-    /// 
+    ///
     /// stack.push(1);
     /// assert_eq!(stack.peek(), Some(&1));
     /// ```
@@ -130,19 +129,19 @@ impl<T: Clone> Stack<T> {
     }
 
     /// Checks if the Stack is empty.
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// * `bool` - True if the Stack is empty, otherwise false.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
-    /// use std_only::Stack;
-    /// 
+    /// use studylib::ds::stacks::stack::Stack;
+    ///
     /// let mut stack = Stack::new(10);
     /// assert!(stack.is_empty());
-    /// 
+    ///
     /// stack.push(1);
     /// assert!(!stack.is_empty());
     /// ```
@@ -153,14 +152,14 @@ impl<T: Clone> Stack<T> {
     /// Gets the capacity of the Stack.
     ///
     /// # Returns
-    /// 
+    ///
     /// * `usize` - The capacity of the Stack.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
-    /// use std_only::Stack;
-    /// 
+    /// use studylib::ds::stacks::stack::Stack;
+    ///
     /// let mut stack: Stack<i32> = Stack::new(10);
     /// assert_eq!(stack.get_capacity(), 10);
     /// ```
@@ -171,19 +170,19 @@ impl<T: Clone> Stack<T> {
     /// Gets the number of elements of the Stack.
     ///
     /// # Returns
-    /// 
+    ///
     /// * `usize` - The number of elements of the Stack.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
-    /// use std_only::Stack;
-    /// 
+    /// use studylib::ds::stacks::stack::Stack;
+    ///
     /// let mut stack = Stack::new(10);
     /// stack.push(1);
     /// stack.push(2);
     /// assert_eq!(stack.len(), 2);
-    /// 
+    ///
     /// stack.pop();
     /// assert_eq!(stack.len(), 1);
     /// ```
@@ -192,20 +191,20 @@ impl<T: Clone> Stack<T> {
     }
 
     /// Creates a new Stack from an array.
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `array` - The array to create the Stack from.
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// * `Stack<T>` - The new Stack.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
-    /// use std_only::Stack;
-    /// 
+    /// use studylib::ds::stacks::stack::Stack;
+    ///
     /// let stack = Stack::from_array(&[1, 2, 3]);
     /// assert_eq!(stack.len(), 3);
     /// assert_eq!(stack.peek(), Some(&3));
@@ -220,16 +219,16 @@ impl<T: Clone> Stack<T> {
     }
 
     /// Pushes multiple elements onto the Stack.
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `items` - The elements to push onto the Stack.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
-    /// use std_only::Stack;
-    /// 
+    /// use studylib::ds::stacks::stack::Stack;
+    ///
     /// let mut stack = Stack::default();
     /// stack.push_many(&[1, 2, 3]);
     /// assert_eq!(stack.len(), 3);
@@ -243,20 +242,20 @@ impl<T: Clone> Stack<T> {
     }
 
     /// Pops multiple elements from the Stack.
-    /// 
+    ///
     /// # Arguments
-    /// 
+    ///
     /// * `count` - The number of elements to pop.
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// * `Option<Vec<T>>` - The popped elements, or None if the Stack does not contain enough elements.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
-    /// use std_only::Stack;
-    /// 
+    /// use studylib::ds::stacks::stack::Stack;
+    ///
     /// let mut stack = Stack::from_array(&[1, 2, 3]);
     /// let popped = stack.pop_many(2);
     /// assert_eq!(popped, Some(vec![2, 3]));
@@ -275,16 +274,16 @@ impl<T: Clone> Stack<T> {
     }
 
     /// Converts the Stack into a Vec.
-    /// 
+    ///
     /// # Returns
-    /// 
+    ///
     /// * `Vec<T>` - The Vec containing the elements of the Stack.
-    /// 
+    ///
     /// # Examples
-    /// 
+    ///
     /// ```
-    /// use std_only::Stack;
-    /// 
+    /// use studylib::ds::stacks::stack::Stack;
+    ///
     /// let mut stack = Stack::from_array(&[1, 2, 3]);
     /// let vec = stack.into_vec();
     /// assert_eq!(vec, vec![1, 2, 3]);
@@ -302,7 +301,7 @@ impl<T: Clone> Stack<T> {
     /// # Examples
     ///
     /// ```
-    /// use std_only::Stack;
+    /// use studylib::ds::stacks::stack::Stack;
     ///
     /// let mut stack = Stack::from_array(&[1, 2, 3]);
     /// let boxed_slice = stack.into_boxed_slice();

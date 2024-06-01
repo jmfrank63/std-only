@@ -3,7 +3,7 @@
 // - Implementation of PriorityQueue
 // - Tests for PriorityQueue
 
-use crate::{Heap, HeapType};
+use crate::ds::heaps::{Heap, HeapType};
 
 /// A priority queue data structure making use of a binary heap.
 /// Use the heap we have already implemented to create a priority queue.
@@ -11,7 +11,7 @@ use crate::{Heap, HeapType};
 /// # Examples
 ///
 /// ```
-/// use std_only::PriorityQueue;
+/// use studylib::ds::queues::PriorityQueue;
 ///
 /// let mut pq = PriorityQueue::new();
 /// pq.push(1, 1);
@@ -34,7 +34,7 @@ impl<P: Ord + Clone, E: Ord + Clone> PriorityQueue<P, E> {
     /// Examples
     ///
     /// ```
-    /// use std_only::PriorityQueue;
+    /// use studylib::ds::queues::PriorityQueue;
     ///
     /// let mut pq: PriorityQueue<i32, i32> = PriorityQueue::new();
     /// assert!(pq.is_empty());
@@ -55,7 +55,7 @@ impl<P: Ord + Clone, E: Ord + Clone> PriorityQueue<P, E> {
     /// # Examples
     ///
     /// ```
-    /// use std_only::PriorityQueue;
+    /// use studylib::ds::queues::PriorityQueue;
     ///
     /// let mut pq = PriorityQueue::new();
     /// pq.push(1, 1);
@@ -72,7 +72,7 @@ impl<P: Ord + Clone, E: Ord + Clone> PriorityQueue<P, E> {
     /// # Examples
     ///
     /// ```
-    /// use std_only::PriorityQueue;
+    /// use studylib::ds::queues::PriorityQueue;
     ///
     /// let mut pq = PriorityQueue::new();
     /// pq.push(1, 1);
@@ -92,7 +92,7 @@ impl<P: Ord + Clone, E: Ord + Clone> PriorityQueue<P, E> {
     /// # Examples
     ///
     /// ```
-    /// use std_only::PriorityQueue;
+    /// use studylib::ds::queues::PriorityQueue;
     ///
     /// let mut pq = PriorityQueue::new();
     /// pq.push(1, 1);
@@ -109,7 +109,7 @@ impl<P: Ord + Clone, E: Ord + Clone> PriorityQueue<P, E> {
     /// # Examples
     ///
     /// ```
-    /// use std_only::PriorityQueue;
+    /// use studylib::ds::queues::PriorityQueue;
     ///
     /// let mut pq = PriorityQueue::new();
     /// assert_eq!(pq.len(), 0);
@@ -127,7 +127,7 @@ impl<P: Ord + Clone, E: Ord + Clone> PriorityQueue<P, E> {
     /// # Examples
     ///
     /// ```
-    /// use std_only::PriorityQueue;
+    /// use studylib::ds::queues::PriorityQueue;
     ///
     /// let mut pq = PriorityQueue::new();
     /// assert!(pq.is_empty());
@@ -147,7 +147,7 @@ impl<P: Ord + Clone, E: Ord + Clone> PriorityQueue<P, E> {
     /// # Examples
     ///
     /// ```
-    /// use std_only::PriorityQueue;
+    /// use studylib::ds::queues::PriorityQueue;
     ///
     /// let array = [(1, 1), (2, 2), (3, 3)];
     /// let pq = PriorityQueue::from_array(&array);
@@ -169,7 +169,7 @@ impl<P: Ord + Clone, E: Ord + Clone> PriorityQueue<P, E> {
     /// # Examples
     ///
     /// ```
-    /// use std_only::PriorityQueue;
+    /// use studylib::ds::queues::PriorityQueue;
     ///
     /// let mut pq = PriorityQueue::new();
     /// pq.push_many(&[(1, 1), (2, 2), (3, 3)]);
@@ -182,7 +182,6 @@ impl<P: Ord + Clone, E: Ord + Clone> PriorityQueue<P, E> {
         }
     }
 }
-
 
 #[cfg(test)]
 mod tests {

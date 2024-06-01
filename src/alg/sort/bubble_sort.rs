@@ -7,7 +7,7 @@
 /// # Examples
 /// 
 /// ```
-/// use std_only::BubbleSort;
+/// use studylib::alg::sort::BubbleSort;
 /// 
 /// let mut arr = [4, 2, 3, 1];
 /// arr.bubble_sort(true);

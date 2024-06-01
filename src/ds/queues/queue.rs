@@ -6,12 +6,12 @@
 /// A Queue data structure.
 ///
 /// A queue is a data structure that allows elements to be added and removed in a first-in-first-out (FIFO) order.
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```
-/// use std_only::Queue;
-/// 
+/// use studylib::ds::queues::Queue;
+///
 /// let mut queue = Queue::new();
 /// queue.push(1);
 /// queue.push(2);
@@ -27,19 +27,19 @@ pub struct Queue<T> {
     elements: Vec<T>,
 }
 
-/// Default implementation for Queue.
-///
-/// Creates a new empty Queue.
-///
-/// Examples
-///
-/// ```
-/// use std_only::Queue;
-///
-/// let mut queue: Queue<i32> = Queue::default();
-/// assert!(queue.is_empty());
-/// ```
 impl<T> Default for Queue<T> {
+    /// Default implementation for Queue.
+    ///
+    /// Creates a new empty Queue.
+    ///
+    /// Examples
+    ///
+    /// ```
+    /// use studylib::ds::queues::Queue;
+    ///
+    /// let mut queue: Queue<i32> = Queue::default();
+    /// assert!(queue.is_empty());
+    /// ```
     fn default() -> Self {
         Queue {
             elements: Vec::new(),
@@ -53,7 +53,7 @@ impl<T> Queue<T> {
     /// Examples
     ///
     /// ```
-    /// use std_only::Queue;
+    /// use studylib::ds::queues::Queue;
     ///
     /// let mut queue: Queue<i32> = Queue::new();
     /// assert!(queue.is_empty());
@@ -73,7 +73,7 @@ impl<T> Queue<T> {
     /// Examples
     ///
     /// ```
-    /// use std_only::Queue;
+    /// use studylib::ds::queues::Queue;
     ///
     /// let mut queue = Queue::new();
     /// queue.push(1);
@@ -85,14 +85,14 @@ impl<T> Queue<T> {
         self.elements.push(element);
     }
 
-        /// Removes an element from the Queue.
+    /// Removes an element from the Queue.
     ///
     /// Returns the removed element, or None if the Queue is empty.
     ///
     /// Examples
     ///
     /// ```
-    /// use std_only::Queue;
+    /// use studylib::ds::queues::Queue;
     ///
     /// let mut queue = Queue::new();
     /// queue.push(1);
@@ -116,7 +116,7 @@ impl<T> Queue<T> {
     /// Examples
     ///
     /// ```
-    /// use std_only::Queue;
+    /// use studylib::ds::queues::Queue;
     ///
     /// let mut queue = Queue::new();
     /// queue.push(1);
@@ -131,7 +131,7 @@ impl<T> Queue<T> {
     /// Examples
     ///
     /// ```
-    /// use std_only::Queue;
+    /// use studylib::ds::queues::Queue;
     ///
     /// let mut queue = Queue::new();
     /// assert!(queue.is_empty());
@@ -148,7 +148,7 @@ impl<T> Queue<T> {
     /// Examples
     ///
     /// ```
-    /// use std_only::Queue;
+    /// use studylib::ds::queues::Queue;
     ///
     /// let mut queue = Queue::new();
     /// assert_eq!(queue.len(), 0);
@@ -171,7 +171,7 @@ impl<T> Queue<T> {
     /// Examples
     ///
     /// ```
-    /// use std_only::Queue;
+    /// use studylib::ds::queues::Queue;
     ///
     /// let queue = Queue::from_array(&[1, 2, 3]);
     /// assert_eq!(queue.is_empty(), false);
