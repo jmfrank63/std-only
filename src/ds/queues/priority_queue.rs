@@ -3,7 +3,7 @@
 // - Implementation of PriorityQueue
 // - Tests for PriorityQueue
 
-use crate::ds::heaps::{Heap, HeapType};
+use crate::ds::heaps::BinaryMaxHeap;
 
 /// A priority queue data structure making use of a binary heap.
 /// Use the heap we have already implemented to create a priority queue.
@@ -25,10 +25,10 @@ use crate::ds::heaps::{Heap, HeapType};
 /// ```
 #[derive(Debug)]
 pub struct PriorityQueue<P, E> {
-    heap: Heap<(P, E)>,
+    heap: BinaryMaxHeap<(P, E)>,
 }
 
-impl<P: Ord + Clone, E: Ord + Clone> PriorityQueue<P, E> {
+impl<P: Ord, E: Ord> PriorityQueue<P, E> {
     /// Creates a new empty PriorityQueue.
     ///
     /// Examples
@@ -41,7 +41,7 @@ impl<P: Ord + Clone, E: Ord + Clone> PriorityQueue<P, E> {
     /// ```
     pub fn new() -> Self {
         PriorityQueue {
-            heap: Heap::new(HeapType::Max),
+            heap: BinaryMaxHeap::default(),
         }
     }
 
@@ -64,7 +64,7 @@ impl<P: Ord + Clone, E: Ord + Clone> PriorityQueue<P, E> {
     /// assert_eq!(pq.len(), 3);
     /// ```
     pub fn push(&mut self, element: E, priority: P) {
-        self.heap.push((priority, element));
+        self.heap.insert((priority, element));
     }
 
     /// Removes the element with the highest priority from the PriorityQueue and returns it.
@@ -84,7 +84,7 @@ impl<P: Ord + Clone, E: Ord + Clone> PriorityQueue<P, E> {
     /// assert_eq!(pq.pop(), None);
     /// ```
     pub fn pop(&mut self) -> Option<(P, E)> {
-        self.heap.pop()
+        self.heap.remove()
     }
 
     /// Returns a reference to the element with the highest priority.
@@ -137,50 +137,6 @@ impl<P: Ord + Clone, E: Ord + Clone> PriorityQueue<P, E> {
     pub fn is_empty(&self) -> bool {
         self.heap.is_empty()
     }
-
-    /// Creates a PriorityQueue from an array of tuples.
-    ///
-    /// # Arguments
-    ///
-    /// * `array` - A reference to an array of tuples.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use studylib::ds::queues::PriorityQueue;
-    ///
-    /// let array = [(1, 1), (2, 2), (3, 3)];
-    /// let pq = PriorityQueue::from_array(&array);
-    /// assert_eq!(pq.len(), 3);
-    /// assert_eq!(pq.peek(), Some(&(3, 3)));
-    /// ```
-    pub fn from_array(array: &[(P, E)]) -> Self {
-        let mut pq = PriorityQueue::new();
-        pq.push_many(array);
-        pq
-    }
-
-    /// Adds many elements with their priorities to the PriorityQueue.
-    ///
-    /// # Arguments
-    ///
-    /// * `array` - A reference to an array of tuples.
-    ///
-    /// # Examples
-    ///
-    /// ```
-    /// use studylib::ds::queues::PriorityQueue;
-    ///
-    /// let mut pq = PriorityQueue::new();
-    /// pq.push_many(&[(1, 1), (2, 2), (3, 3)]);
-    /// assert_eq!(pq.len(), 3);
-    /// assert_eq!(pq.peek(), Some(&(3, 3)));
-    /// ```
-    pub fn push_many(&mut self, array: &[(P, E)]) {
-        for (p, e) in array {
-            self.push((*e).clone(), (*p).clone());
-        }
-    }
 }
 
 #[cfg(test)]
@@ -228,21 +184,5 @@ mod tests {
         pq.push(2, 2);
         pq.push(3, 3);
         assert_eq!(pq.len(), 3);
-    }
-
-    #[test]
-    fn test_from_array() {
-        let array = [(1, 1), (2, 2), (3, 3)];
-        let mut pq = PriorityQueue::from_array(&array);
-        assert_eq!(pq.len(), 3);
-        assert_eq!(pq.pop(), Some((3, 3)));
-    }
-
-    #[test]
-    fn test_push_many() {
-        let mut pq = PriorityQueue::new();
-        pq.push_many(&[(1, 1), (2, 2), (3, 3)]);
-        assert_eq!(pq.len(), 3);
-        assert_eq!(pq.pop(), Some((3, 3)));
     }
 }
