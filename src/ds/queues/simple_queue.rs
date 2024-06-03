@@ -3,6 +3,8 @@
 // - Implementation of SimpleQueue
 // - Tests for SimpleQueue
 
+use super::Queue;
+
 /// A SimpleQueue data structure.
 ///
 /// A queue is a data structure that allows elements to be added and removed in a first-in-first-out (FIFO) order.
@@ -12,7 +14,7 @@
 /// ```
 /// use studylib::ds::queues::SimpleQueue;
 ///
-/// let mut queue = SimpleQueue::new();
+/// let mut queue = SimpleQueue::default();
 /// queue.push(1);
 /// queue.push(2);
 /// queue.push(3);
@@ -41,29 +43,13 @@ impl<T> Default for SimpleQueue<T> {
     /// assert!(queue.is_empty());
     /// ```
     fn default() -> Self {
-        SimpleQueue {
+        Self {
             elements: Vec::new(),
         }
     }
 }
 
-impl<T> SimpleQueue<T> {
-    /// Creates a new SimpleQueue.
-    ///
-    /// Examples
-    ///
-    /// ```
-    /// use studylib::ds::queues::SimpleQueue;
-    ///
-    /// let mut queue: SimpleQueue<i32> = SimpleQueue::new();
-    /// assert!(queue.is_empty());
-    /// ```
-    pub fn new() -> Self {
-        SimpleQueue {
-            elements: Vec::new(),
-        }
-    }
-
+impl<T> Queue<T> for SimpleQueue<T> {
     /// Adds an element to the SimpleQueue.
     ///
     /// # Arguments
@@ -75,13 +61,13 @@ impl<T> SimpleQueue<T> {
     /// ```
     /// use studylib::ds::queues::SimpleQueue;
     ///
-    /// let mut queue = SimpleQueue::new();
+    /// let mut queue = SimpleQueue::default();
     /// queue.push(1);
     /// queue.push(2);
     /// queue.push(3);
     /// assert_eq!(queue.peek(), Some(&1));
     /// ```
-    pub fn push(&mut self, element: T) {
+    fn push(&mut self, element: T) {
         self.elements.push(element);
     }
 
@@ -94,7 +80,7 @@ impl<T> SimpleQueue<T> {
     /// ```
     /// use studylib::ds::queues::SimpleQueue;
     ///
-    /// let mut queue = SimpleQueue::new();
+    /// let mut queue = SimpleQueue::default();
     /// queue.push(1);
     /// queue.push(2);
     /// queue.push(3);
@@ -103,7 +89,7 @@ impl<T> SimpleQueue<T> {
     /// assert_eq!(queue.pop(), Some(3));
     /// assert_eq!(queue.pop(), None);
     /// ```
-    pub fn pop(&mut self) -> Option<T> {
+    fn pop(&mut self) -> Option<T> {
         if self.elements.is_empty() {
             None
         } else {
@@ -118,11 +104,11 @@ impl<T> SimpleQueue<T> {
     /// ```
     /// use studylib::ds::queues::SimpleQueue;
     ///
-    /// let mut queue = SimpleQueue::new();
+    /// let mut queue = SimpleQueue::default();
     /// queue.push(1);
     /// assert_eq!(queue.peek(), Some(&1));
     /// ```
-    pub fn peek(&self) -> Option<&T> {
+    fn peek(&self) -> Option<&T> {
         self.elements.first()
     }
 
@@ -133,13 +119,13 @@ impl<T> SimpleQueue<T> {
     /// ```
     /// use studylib::ds::queues::SimpleQueue;
     ///
-    /// let mut queue = SimpleQueue::new();
+    /// let mut queue = SimpleQueue::default();
     /// assert!(queue.is_empty());
     ///
     /// queue.push(1);
     /// assert!(!queue.is_empty());
     /// ```
-    pub fn is_empty(&self) -> bool {
+    fn is_empty(&self) -> bool {
         self.elements.is_empty()
     }
 
@@ -150,7 +136,121 @@ impl<T> SimpleQueue<T> {
     /// ```
     /// use studylib::ds::queues::SimpleQueue;
     ///
-    /// let mut queue = SimpleQueue::new();
+    /// let mut queue = SimpleQueue::default();
+    /// assert_eq!(queue.len(), 0);
+    ///
+    /// queue.push(1);
+    /// queue.push(2);
+    /// queue.push(3);
+    /// assert_eq!(queue.len(), 3);
+    /// ```
+    fn len(&self) -> usize {
+        self.elements.len()
+    }
+
+    /// Clears the SimpleQueue, removing all elements.
+    /// 
+    /// Examples
+    /// 
+    /// ```
+    /// use studylib::ds::queues::SimpleQueue;
+    /// 
+    /// let mut queue = SimpleQueue::default();
+    /// queue.push(1);
+    /// queue.push(2);
+    /// queue.push(3);
+    /// queue.clear();
+    /// assert_eq!(queue.is_empty(), true);
+    /// ```
+    fn clear(&mut self) {
+        self.elements.clear();
+    }
+}
+
+impl<T> SimpleQueue<T> {
+    /// Pushes an element to the SimpleQueue.
+    /// 
+    /// # Arguments
+    ///
+    /// * `element` - The element to add to the SimpleQueue.
+    ///
+    /// Examples
+    ///
+    /// ```
+    /// use studylib::ds::queues::SimpleQueue;
+    ///
+    /// let mut queue = SimpleQueue::default();
+    /// queue.push(1);
+    /// queue.push(2);
+    /// queue.push(3);
+    /// assert_eq!(queue.peek(), Some(&1));
+    /// ```
+    pub fn push(&mut self, element: T) {
+        Queue::push(self, element);
+    }
+
+    /// Removes an element from the SimpleQueue.
+    ///
+    /// Returns the removed element, or None if the SimpleQueue is empty.
+    ///
+    /// Examples
+    ///
+    /// ```
+    /// use studylib::ds::queues::SimpleQueue;
+    ///
+    /// let mut queue = SimpleQueue::default();
+    /// queue.push(1);
+    /// queue.push(2);
+    /// queue.push(3);
+    /// assert_eq!(queue.pop(), Some(1));
+    /// assert_eq!(queue.pop(), Some(2));
+    /// assert_eq!(queue.pop(), Some(3));
+    /// assert_eq!(queue.pop(), None);
+    /// ```
+    pub fn pop(&mut self) -> Option<T> {
+        Queue::pop(self)
+    }
+
+    /// Returns a reference to the first element in the SimpleQueue.
+    ///
+    /// Examples
+    ///
+    /// ```
+    /// use studylib::ds::queues::SimpleQueue;
+    ///
+    /// let mut queue = SimpleQueue::default();
+    /// queue.push(1);
+    /// assert_eq!(queue.peek(), Some(&1));
+    /// ```
+    pub fn peek(&self) -> Option<&T> {
+        Queue::peek(self)
+    }
+
+    /// Checks if the SimpleQueue is empty.
+    ///
+    /// Examples
+    ///
+    /// ```
+    /// use studylib::ds::queues::SimpleQueue;
+    ///
+    /// let mut queue = SimpleQueue::default();
+    /// assert!(queue.is_empty());
+    ///
+    /// queue.push(1);
+    /// assert!(!queue.is_empty());
+    /// ```
+    pub fn is_empty(&self) -> bool {
+        Queue::is_empty(self)
+    }
+
+    /// Returns the number of elements in the SimpleQueue.
+    ///
+    /// Examples
+    ///
+    /// ```
+    /// use studylib::ds::queues::SimpleQueue;
+    ///
+    /// let mut queue = SimpleQueue::default();
     /// assert_eq!(queue.len(), 0);
     ///
     /// queue.push(1);
@@ -159,32 +259,25 @@ impl<T> SimpleQueue<T> {
     /// assert_eq!(queue.len(), 3);
     /// ```
     pub fn len(&self) -> usize {
-        self.elements.len()
+        Queue::len(self)
     }
 
-    /// Creates a new SimpleQueue from an array.
-    ///
-    /// # Arguments
-    ///
-    /// * `array` - A slice of elements to create the SimpleQueue from.
-    ///
+    /// Clears the SimpleQueue, removing all elements.
+    /// 
     /// Examples
-    ///
+    /// 
     /// ```
     /// use studylib::ds::queues::SimpleQueue;
-    ///
-    /// let queue = SimpleQueue::from_array(&[1, 2, 3]);
-    /// assert_eq!(queue.is_empty(), false);
-    /// assert_eq!(queue.len(), 3);
-    /// assert_eq!(queue.peek(), Some(&1));
+    /// 
+    /// let mut queue = SimpleQueue::default();
+    /// queue.push(1);
+    /// queue.push(2);
+    /// queue.push(3);
+    /// queue.clear();
+    /// assert_eq!(queue.is_empty(), true);
     /// ```
-    pub fn from_array(array: &[T]) -> Self
-    where
-        T: Clone,
-    {
-        SimpleQueue {
-            elements: array.to_vec(),
-        }
+    pub fn clear(&mut self) {
+        Queue::clear(self);
     }
 }
 
@@ -195,13 +288,6 @@ mod tests {
     #[test]
     fn test_queue_default() {
         let queue: SimpleQueue<i32> = SimpleQueue::default();
-        assert_eq!(queue.is_empty(), true);
-        assert_eq!(queue.len(), 0);
-    }
-
-    #[test]
-    fn test_queue_new() {
-        let queue: SimpleQueue<i32> = SimpleQueue::new();
         assert_eq!(queue.is_empty(), true);
         assert_eq!(queue.len(), 0);
     }
@@ -242,26 +328,5 @@ mod tests {
         queue.pop();
         assert_eq!(queue.is_empty(), true);
         assert_eq!(queue.len(), 0);
-    }
-
-    #[test]
-    fn test_queue_from_array_new() {
-        let queue = SimpleQueue::from_array(&[1, 2, 3]);
-        assert_eq!(queue.is_empty(), false);
-        assert_eq!(queue.len(), 3);
-    }
-
-    #[test]
-    fn test_queue_from_array_peek() {
-        let queue = SimpleQueue::from_array(&[1, 2, 3]);
-        assert_eq!(queue.peek(), Some(&1));
-    }
-
-    #[test]
-    fn test_queue_from_array() {
-        let queue = SimpleQueue::from_array(&[1, 2, 3]);
-        assert_eq!(queue.is_empty(), false);
-        assert_eq!(queue.len(), 3);
-        assert_eq!(queue.peek(), Some(&1));
     }
 }

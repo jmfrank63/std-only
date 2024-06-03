@@ -84,6 +84,10 @@ impl<T: Ord> Heap<T> for BinaryMaxHeap<T> {
         self.elements.extend(other.elements);
         self.elements.sort();
     }
+
+    fn clear(&mut self) {
+        self.elements.clear();
+    }
 }
 
 impl <T: Ord> BinaryMaxHeap<T> {
@@ -193,6 +197,23 @@ impl <T: Ord> BinaryMaxHeap<T> {
     /// ```
     pub fn is_empty(&self) -> bool {
         Heap::is_empty(self)
+    }
+
+    /// Clears the heap, removing all elements.
+    ///
+    /// # Examples
+    ///
+    /// ```
+    /// use studylib::ds::heaps::BinaryMaxHeap;
+    ///
+    /// let mut heap: BinaryMaxHeap<i32> = BinaryMaxHeap::default();
+    /// heap.insert(1);
+    /// heap.insert(2);
+    /// heap.clear();
+    /// assert!(heap.is_empty());
+    /// ```
+    pub fn clear(&mut self) {
+        Heap::clear(self)
     }
 }
 

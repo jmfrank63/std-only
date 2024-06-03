@@ -48,6 +48,10 @@ pub use binary_max_heap::BinaryMaxHeap;
 ///         self.data.extend(other.data);
 ///         self.data.sort();
 ///     }
+/// 
+///     fn clear(&mut self) {
+///       self.data.clear();
+///     }
 /// }
 /// 
 /// let mut heap = MyHeap { data: Vec::new() };
@@ -67,4 +71,5 @@ pub trait Heap<T: Ord> {
     fn len(&self) -> usize;
     fn is_empty(&self) -> bool;
     fn merge(&mut self, other: Self);
+    fn clear(&mut self);
 }

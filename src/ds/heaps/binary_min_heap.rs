@@ -84,6 +84,10 @@ impl<T: Ord> Heap<T> for BinaryMinHeap<T> {
         self.elements.extend(other.elements);
         self.elements.sort();
     }
+
+    fn clear(&mut self) {
+        self.elements.clear();
+    }
 }
 
 impl<T: Ord> BinaryMinHeap<T> {

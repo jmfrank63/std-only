@@ -1,7 +1,7 @@
 pub mod simple_queue;
 pub mod priority_queue;
 
-pub use priority_queue::PriorityQueue;
+pub use priority_queue::MaxPriorityQueue;
 pub use simple_queue::SimpleQueue;
 
 /// A trait for a queue data structure.
@@ -42,6 +42,10 @@ pub use simple_queue::SimpleQueue;
 ///     fn peek(&self) -> Option<&T> {
 ///         self.data.get(0)
 ///     }
+/// 
+///    fn clear(&mut self) {
+///       self.data.clear();
+///    }
 /// }
 /// 
 /// let mut queue = MyQueue { data: Vec::new() };
@@ -54,10 +58,11 @@ pub use simple_queue::SimpleQueue;
 /// assert_eq!(queue.is_empty(), true);
 /// assert_eq!(queue.pop(), None);
 /// ```
-pub trait Queue<T: Ord> {
+pub trait Queue<T> {
     fn is_empty(&self) -> bool;
     fn len(&self) -> usize;
     fn push(&mut self, element: T);
     fn pop(&mut self) -> Option<T>;
     fn peek(&self) -> Option<&T>;
+    fn clear(&mut self);
 }
