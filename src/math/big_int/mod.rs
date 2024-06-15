@@ -115,7 +115,7 @@ impl std::ops::Add for BigInt {
 
             for (a, b) in self.digits.iter().zip(&rhs.digits) {
                 let sum = a.wrapping_add(*b).wrapping_add(carry);
-                carry = (sum < *a) as usize;
+                carry = (sum < *a || (carry > 0 && sum == *a)) as usize;
                 result.digits.push(sum);
             }
 
@@ -135,7 +135,7 @@ impl std::ops::Add for BigInt {
                 result.digits.push(carry);
             }
 
-            if self.is_zero() {
+            if result.is_zero() {
                 result.negative = false;
             }
 
@@ -143,7 +143,7 @@ impl std::ops::Add for BigInt {
         } else {
             // If the numbers have different signs, subtract the smaller absolute value from the larger one.
             // The sign of the result is the sign of the number with the larger absolute value.
-            let (larger, smaller, negative) = if self.abs() > rhs {
+            let (larger, smaller, negative) = if self.abs() >= rhs.abs() {
                 (&self, &rhs, self.negative)
             } else {
                 (&rhs, &self, rhs.negative)
@@ -156,15 +156,14 @@ impl std::ops::Add for BigInt {
 
             let mut borrow = 0;
             for (a, b) in larger.digits.iter().zip(smaller.digits.iter()) {
-                let (sub, borrow1) = a.overflowing_sub(*b);
-                let (sub, borrow2) = sub.overflowing_sub(borrow);
-                borrow = (borrow1 as usize) + (borrow2 as usize);
+                let (sub, borrow1) = a.overflowing_sub(*b + borrow);
+                borrow = if borrow1 { 1 } else { 0 };
                 result.digits.push(sub);
             }
 
             for &a in larger.digits.iter().skip(smaller.digits.len()) {
                 let (sub, borrow1) = a.overflowing_sub(borrow);
-                borrow = borrow1 as usize;
+                borrow = if borrow1 { 1 } else { 0 };
                 result.digits.push(sub);
             }
 
@@ -175,8 +174,10 @@ impl std::ops::Add for BigInt {
 
             if result.is_zero() {
                 result.negative = false;
+            } else {
+                result.negative = negative;
             }
-            
+
             result
         }
     }
