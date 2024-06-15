@@ -107,7 +107,6 @@ impl std::ops::Add for BigInt {
 
     fn add(self, rhs: Self) -> Self {
         if self.negative == rhs.negative {
-            println!("Adding numbers with the same sign.");
             let mut result = BigInt {
                 digits: Vec::new(),
                 negative: self.negative,
@@ -140,42 +139,35 @@ impl std::ops::Add for BigInt {
                 result.negative = false;
             }
 
-            println!("Result digits: {:?}", result.digits);
-            println!("Result negative: {:?}", result.negative);
             result
         } else {
-            println!("Subtracting numbers with different signs.");
-            // Different sign subtraction using absolute values
             let (larger, smaller, negative) = if self.abs() >= rhs.abs() {
                 (&self, &rhs, self.negative)
             } else {
                 (&rhs, &self, rhs.negative)
             };
 
-            println!("Larger: {:?}, Smaller: {:?}", larger.digits, smaller.digits);
-            let mut result = BigInt {
-                digits: Vec::new(),
-                negative,
-            };
+            let mut result = BigInt::default();
 
             let mut borrow = 0;
-            for (a, b) in larger.digits.iter().zip(&smaller.digits) {
+            for (i, (a, b)) in larger.digits.iter().zip(smaller.digits.iter()).enumerate() {
                 let (sub, overflow) = a.overflowing_sub(*b + borrow);
-                println!("Subtracting: {} - {} - {} = {}, Overflow: {}", a, b, borrow, sub, overflow);
                 borrow = if overflow { 1 } else { 0 };
                 result.digits.push(sub);
+                println!("Step {}: borrow: {}, result: {:?}", i, borrow, result.digits);
             }
 
-            for &a in larger.digits.iter().skip(smaller.digits.len()) {
+            for (i, &a) in larger.digits.iter().skip(smaller.digits.len()).enumerate() {
                 let (sub, overflow) = a.overflowing_sub(borrow);
-                println!("Continuing subtraction: {} - {} = {}, Overflow: {}", a, borrow, sub, overflow);
                 borrow = if overflow { 1 } else { 0 };
                 result.digits.push(sub);
+                println!("Step {}: borrow: {}, result: {:?}", i + smaller.digits.len(), borrow, result.digits);
             }
 
             // Handle case where borrow is still 1 after the loop
             if borrow > 0 {
-                for digit in result.digits.iter_mut().rev() {
+                for (i, digit) in result.digits.iter_mut().rev().enumerate() {
+                    println!("Borrow step {}: {:?}", i, digit);
                     if *digit == 0 {
                         *digit = usize::MAX;
                     } else {
@@ -184,6 +176,8 @@ impl std::ops::Add for BigInt {
                     }
                 }
             }
+
+            println!("Result: {:?}", result.digits);
 
             // Remove any trailing zeros
             while result.digits.len() > 1 && *result.digits.last().unwrap() == 0 {
@@ -196,13 +190,10 @@ impl std::ops::Add for BigInt {
                 result.negative = negative;
             }
 
-            println!("Result digits: {:?}", result.digits);
-            println!("Result negative: {:?}", result.negative);
             result
         }
     }
 }
-
 
 impl BigInt {
     fn abs(&self) -> Self {
@@ -216,6 +207,7 @@ impl BigInt {
         self.digits.len() == 1 && self.digits[0] == 0
     }
 }
+
 
 #[cfg(test)]
 mod tests {
