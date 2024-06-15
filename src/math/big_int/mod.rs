@@ -109,7 +109,7 @@ impl std::ops::Add for BigInt {
         if self.negative == rhs.negative {
             let mut result = BigInt {
                 digits: Vec::new(),
-                negative: false,
+                negative: self.negative,
             };
             let mut carry = 0;
 
@@ -135,44 +135,63 @@ impl std::ops::Add for BigInt {
                 result.digits.push(carry);
             }
 
-            result.negative = self.negative;
+            if self.is_zero() {
+                result.negative = false;
+            }
+
             result
         } else {
             // If the numbers have different signs, subtract the smaller absolute value from the larger one.
             // The sign of the result is the sign of the number with the larger absolute value.
-            let (larger, smaller) = if self > rhs {
-                (&self, &rhs)
+            let (larger, smaller, negative) = if self.abs() > rhs {
+                (&self, &rhs, self.negative)
             } else {
-                (&rhs, &self)
+                (&rhs, &self, rhs.negative)
             };
 
             let mut result = BigInt {
                 digits: Vec::new(),
-                negative: larger.negative,
+                negative,
             };
 
             let mut borrow = 0;
-            for (a, b) in larger.digits.iter().zip(&smaller.digits) {
-                let total = b + borrow;
-                let temp_borrow = if a < &total { 1 } else { 0 };
-                let diff = if temp_borrow == 1 { a.wrapping_add(usize::MAX + 1).wrapping_sub(total) } else { a.wrapping_sub(total) };
-                borrow = temp_borrow;
-                result.digits.push(diff);
+            for (a, b) in larger.digits.iter().zip(smaller.digits.iter()) {
+                let (sub, borrow1) = a.overflowing_sub(*b);
+                let (sub, borrow2) = sub.overflowing_sub(borrow);
+                borrow = (borrow1 as usize) + (borrow2 as usize);
+                result.digits.push(sub);
             }
 
-            for a in larger.digits.iter().skip(smaller.digits.len()) {
-                let temp_borrow = if a < &borrow { 1 } else { 0 };
-                let diff = if temp_borrow == 1 { a.wrapping_add(usize::MAX + 1).wrapping_sub(borrow) } else { a.wrapping_sub(borrow) };
-                borrow = temp_borrow;
-                result.digits.push(diff);
+            for &a in larger.digits.iter().skip(smaller.digits.len()) {
+                let (sub, borrow1) = a.overflowing_sub(borrow);
+                borrow = borrow1 as usize;
+                result.digits.push(sub);
             }
-            if result.digits[0] == 0 && result.digits.len() == 1 {
-                result.negative = false
-            } else {
-                result.negative = larger.negative;
+
+            // Remove any trailing zeros
+            while result.digits.len() > 1 && *result.digits.last().unwrap() == 0 {
+                result.digits.pop();
             }
+
+            if result.is_zero() {
+                result.negative = false;
+            }
+            
             result
         }
+    }
+}
+
+impl BigInt {
+    fn abs(&self) -> Self {
+        Self {
+            digits: self.digits.clone(),
+            negative: false,
+        }
+    }
+
+    fn is_zero(&self) -> bool {
+        self.digits.len() == 1 && self.digits[0] == 0
     }
 }
 
