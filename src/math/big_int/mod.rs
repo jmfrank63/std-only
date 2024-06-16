@@ -259,31 +259,26 @@ impl BigInt {
     }
 }
 
+use std::ops::Neg;
+
+impl Neg for BigInt {
+    type Output = Self;
+
+    fn neg(mut self) -> Self {
+        self.negative = !self.negative;
+        // Ensure zero is always positive
+        if self.digits == vec![0] {
+            self.negative = false;
+        }
+        self
+    }
+}
+
 impl std::ops::Sub for BigInt {
     type Output = Self;
 
     fn sub(self, rhs: Self) -> Self {
-        let mut digits = Vec::new();
-        let mut carry = 0;
-        if self.negative == rhs.negative {
-            // Subtract the two numbers
-            for (a, b) in self.digits.iter().zip(&rhs.digits) {
-                let diff = a.wrapping_sub(*b).wrapping_sub(carry);
-                carry = (diff > *a || (carry > 0 && diff == *a)) as usize;
-                digits.push(diff);
-            }
-            Self {
-                digits,
-                negative: self.negative,
-            }
-        } else {
-            let result = if rhs.abs() > self.abs() {
-                rhs.abs() - self.abs()
-            } else {
-                self.abs() - rhs.abs()
-            };
-            result
-        }
+        self + -rhs
     }
 }
 
@@ -605,4 +600,215 @@ mod tests {
             assert_eq!(sum.negative, false);
         }
     }
+
+    mod test_neg {
+        use super::*;
+
+        #[test]
+        fn test_neg_positive() {
+            let bigint = BigInt::from(42).neg();
+            assert_eq!(bigint.digits, vec![42]);
+            assert_eq!(bigint.negative, true);
+        }
+
+        #[test]
+        fn test_neg_negative() {
+            let bigint = BigInt::from(-42).neg();
+            assert_eq!(bigint.digits, vec![42]);
+            assert_eq!(bigint.negative, false);
+        }
+
+        #[test]
+        fn test_neg_zero() {
+            let bigint = BigInt::default().neg();
+            assert_eq!(bigint.digits, vec![0]);
+            assert_eq!(bigint.negative, false);
+        }
+    }
+
+    mod test_sub {
+        use super::*;
+
+        #[test]
+        fn test_default() {
+            let bigint = BigInt::default();
+            assert_eq!(bigint.digits, vec![0]);
+            assert_eq!(bigint.negative, false);
+        }
+
+        #[test]
+        fn test_from_isize_negative() {
+            let bigint = BigInt::from(-42);
+            assert_eq!(bigint.digits, vec![42]);
+            assert_eq!(bigint.negative, true);
+        }
+
+        #[test]
+        fn test_from_isize_positive() {
+            let bigint = BigInt::from(42);
+            assert_eq!(bigint.digits, vec![42]);
+            assert_eq!(bigint.negative, false);
+        }
+
+        #[test]
+        fn test_from_usize() {
+            let bigint = BigInt::from(usize::MAX);
+            assert_eq!(bigint.digits, vec![usize::MAX]);
+            assert_eq!(bigint.negative, false);
+        }
+
+        #[test]
+        fn test_from_i32_negative() {
+            let bigint = BigInt::from(-42);
+            assert_eq!(bigint.digits, vec![42]);
+            assert_eq!(bigint.negative, true);
+        }
+
+        #[test]
+        fn test_from_i32_positive() {
+            let bigint = BigInt::from(42);
+            assert_eq!(bigint.digits, vec![42]);
+            assert_eq!(bigint.negative, false);
+        }
+
+        #[test]
+        fn test_from_u32() {
+            let bigint = BigInt::from(42);
+            assert_eq!(bigint.digits, vec![42]);
+            assert_eq!(bigint.negative, false);
+        }
+
+        #[test]
+        fn test_from_i64_negative() {
+            let bigint = BigInt::from(-42);
+            assert_eq!(bigint.digits, vec![42]);
+            assert_eq!(bigint.negative, true);
+        }
+
+        #[test]
+        fn test_from_i64_positive() {
+            let bigint = BigInt::from(42);
+            assert_eq!(bigint.digits, vec![42]);
+            assert_eq!(bigint.negative, false);
+        }
+
+        #[test]
+        fn test_from_i64_min() {
+            let bigint = BigInt::from(isize::MIN);
+            assert_eq!(bigint.digits, vec![isize::MIN as usize]);
+            assert_eq!(bigint.negative, true);
+        }
+
+        #[test]
+        fn test_from_u64() {
+            let bigint = BigInt::from(42);
+            assert_eq!(bigint.digits, vec![42]);
+            assert_eq!(bigint.negative, false);
+
+            let bigint = BigInt::from(1_000_000_000_000_000_000usize);
+            assert_eq!(bigint.digits, vec![1000000000000000000]);
+            assert_eq!(bigint.negative, false);
+        }
+
+        #[test]
+        fn test_from_vec() {
+            let bigint = BigInt::from(vec![42, 42]);
+            assert_eq!(bigint.digits, vec![42, 42]);
+            assert_eq!(bigint.negative, false);
+        }
+
+        #[test]
+        fn test_add_positive_numbers() {
+            let a = BigInt::from(42);
+            let b = BigInt::from(42);
+            let sum = a + b;
+            assert_eq!(sum.digits, vec![84]);
+            assert_eq!(sum.negative, false);
+        }
+
+        #[test]
+        fn test_add_negative_numbers() {
+            let a = BigInt::from(-42);
+            let b = BigInt::from(-42);
+            let sum = a + b;
+            assert_eq!(sum.digits, vec![84]);
+            assert_eq!(sum.negative, true);
+        }
+
+        #[test]
+        fn test_add_overflow_single_digit() {
+            let a = BigInt {
+                digits: vec![usize::MAX, 0],
+                negative: false,
+            };
+            let b = BigInt::from(1);
+            let sum = a + b;
+            assert_eq!(sum.digits, vec![0, 1]);
+            assert_eq!(sum.negative, false);
+        }
+
+        #[test]
+        fn test_add_overflow_multiple_digits() {
+            let a = BigInt {
+                digits: vec![usize::MAX, usize::MAX],
+                negative: false,
+            };
+            let b = BigInt::from(1);
+            let sum = a + b;
+            assert_eq!(sum.digits, vec![0, 0, 1]);
+            assert_eq!(sum.negative, false);
+        }
+
+        #[test]
+        fn test_add_max_usize() {
+            let a = BigInt::from(usize::MAX);
+            let b = BigInt::from(usize::MAX);
+            let sum = a + b;
+            assert_eq!(sum.digits, vec![usize::MAX - 1, 1]);
+            assert_eq!(sum.negative, false);
+        }
+
+        #[test]
+        fn test_add_positive_negative() {
+            let a = BigInt::from(42);
+            let b = BigInt::from(-42);
+            let sum = a + b;
+            assert_eq!(sum.digits, vec![0]);
+            assert_eq!(sum.negative, false);
+        }
+
+        #[test]
+        fn test_add_negative_positive() {
+            let a = BigInt::from(-42);
+            let b = BigInt::from(42);
+            let sum = a + b;
+            assert_eq!(sum.digits, vec![0]);
+            assert_eq!(sum.negative, false);
+        }
+
+        #[test]
+        fn test_add_negative_positive_overflow() {
+            let a = BigInt {
+                digits: vec![0, 1],
+                negative: false,
+            };
+            let b = BigInt::from(-1);
+            let sum = a + b;
+            assert_eq!(sum.digits, vec![usize::MAX]);
+            assert_eq!(sum.negative, false);
+        }
+
+        #[test]
+        fn test_add_positive_negative_overflow() {
+            let a = BigInt {
+                digits: vec![0, 1],
+                negative: true,
+            };
+            let b = BigInt::from(1);
+            let sum = a + b;
+            assert_eq!(sum.digits, vec![usize::MAX]);
+            assert_eq!(sum.negative, true);
+        }
+    }
+
 }
