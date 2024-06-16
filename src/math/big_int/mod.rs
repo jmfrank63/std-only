@@ -115,7 +115,8 @@ impl std::ops::Add for BigInt {
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self {
-        let result = if self.negative == rhs.negative {
+        if self.negative == rhs.negative {
+            // Adding numbers with the same sign
             let len1 = self.digits.len();
             let len2 = rhs.digits.len();
             let max_len = len1.max(len2);
@@ -130,10 +131,6 @@ impl std::ops::Add for BigInt {
                 let sum = a.wrapping_add(b).wrapping_add(carry);
                 carry = (sum < a || (carry > 0 && sum == a)) as usize;
                 result.push(sum);
-
-                if a == 0 && b == 0 && carry == 0 {
-                    break;
-                }
             }
 
             if carry > 0 {
@@ -144,19 +141,60 @@ impl std::ops::Add for BigInt {
             while result.len() > 1 && *result.last().unwrap() == 0 {
                 result.pop();
             }
-            result
-        } else {
-            Vec::new()
-        };
 
-        // If the result is zero, it should be positive
-        if result.len() == 1 && result[0] == 0 {
-            return Self::default();
-        } 
-        
-        Self {
-            digits: result,
-            negative: self.negative,
+            BigInt {
+                digits: result,
+                negative: self.negative,
+            }
+        } else {
+            // Subtracting numbers with different signs
+            let (larger, smaller, negative) = if self.abs() >= rhs.abs() {
+                (&self, &rhs, self.negative)
+            } else {
+                (&rhs, &self, rhs.negative)
+            };
+
+            let len1 = larger.digits.len();
+            let len2 = smaller.digits.len();
+            let max_len = len1.max(len2);
+
+            let mut result = Vec::with_capacity(max_len);
+            let mut borrow = 0;
+
+            for i in 0..max_len {
+                let a = if i < len1 { larger.digits[i] } else { 0 };
+                let b = if i < len2 { smaller.digits[i] } else { 0 };
+
+                let (sub, overflow) = a.overflowing_sub(b.wrapping_add(borrow));
+                borrow = if overflow { 1 } else { 0 };
+                result.push(sub);
+            }
+
+            // Handle remaining borrow
+            if borrow > 0 {
+                for digit in result.iter_mut().rev() {
+                    if *digit == 0 {
+                        *digit = usize::MAX;
+                    } else {
+                        *digit = digit.wrapping_sub(1);
+                        break;
+                    }
+                }
+            }
+
+            // Remove leading zeros
+            while result.len() > 1 && *result.last().unwrap() == 0 {
+                result.pop();
+            }
+
+            if result.len() == 1 && result[0] == 0 {
+                BigInt::default()
+            } else {
+                BigInt {
+                    digits: result,
+                    negative: negative,
+                }
+            }
         }
     }
 }
