@@ -104,6 +104,11 @@ impl From<u64> for BigInt {
 
 impl From<Vec<usize>> for BigInt {
     fn from(digits: Vec<usize>) -> Self {
+        // Remove leading zeros
+        let mut digits = digits;
+        while digits.len() > 1 && *digits.last().unwrap() == 0 {
+            digits.pop();
+        }
         BigInt {
             digits,
             negative: false,
@@ -148,15 +153,11 @@ impl std::ops::Add for BigInt {
             }
         } else {
             // Subtracting numbers with different signs
-            let (larger, smaller, negative) = if self.abs() >= rhs.abs() {
-                (&self, &rhs, self.negative)
+            let (larger, smaller, negative, max_len, len1, len2) = if self.abs() <= rhs.abs() {
+                (&self, &rhs, self.negative, self.digits.len(), self.digits.len(), rhs.digits.len())
             } else {
-                (&rhs, &self, rhs.negative)
+                (&rhs, &self, rhs.negative, rhs.digits.len(), self.digits.len(), rhs.digits.len())
             };
-
-            let len1 = larger.digits.len();
-            let len2 = smaller.digits.len();
-            let max_len = len1.max(len2);
 
             let mut result = Vec::with_capacity(max_len);
             let mut borrow = 0;
@@ -199,6 +200,17 @@ impl std::ops::Add for BigInt {
     }
 }
 
+impl BigInt {
+    fn abs(&self) -> Self {
+        let abs_digits = self.digits.clone();
+        Self {
+            digits: abs_digits,
+            negative: false,
+        }
+    }
+
+}
+
 
 
 impl std::ops::Sub for BigInt {
@@ -225,15 +237,6 @@ impl std::ops::Sub for BigInt {
                 self.abs() - rhs.abs()
             };
             result
-        }
-    }
-}
-
-impl BigInt {
-    fn abs(&self) -> Self {
-        Self {
-            digits: self.digits.clone(),
-            negative: false,
         }
     }
 }
@@ -397,7 +400,7 @@ mod tests {
         let b = BigInt::from(-1);
         let sum = a + b;
         assert_eq!(sum.digits, vec![usize::MAX]);
-        assert_eq!(sum.negative, true);
+        assert_eq!(sum.negative, false);
     }
 
     #[test]
@@ -409,6 +412,6 @@ mod tests {
         let b = BigInt::from(1);
         let sum = a + b;
         assert_eq!(sum.digits, vec![usize::MAX]);
-        assert_eq!(sum.negative, false);
+        assert_eq!(sum.negative, true);
     }
 }
