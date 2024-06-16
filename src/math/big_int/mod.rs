@@ -102,94 +102,88 @@ impl From<u64> for BigInt {
     }
 }
 
+impl From<Vec<usize>> for BigInt {
+    fn from(digits: Vec<usize>) -> Self {
+        BigInt {
+            digits,
+            negative: false,
+        }
+    }
+}
+
 impl std::ops::Add for BigInt {
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self {
-        if self.negative == rhs.negative {
-            let mut result = BigInt {
-                digits: Vec::new(),
-                negative: self.negative,
-            };
+        let result = if self.negative == rhs.negative {
+            let len1 = self.digits.len();
+            let len2 = rhs.digits.len();
+            let max_len = len1.max(len2);
+
+            let mut result = Vec::with_capacity(max_len);
             let mut carry = 0;
 
-            for (a, b) in self.digits.iter().zip(&rhs.digits) {
-                let sum = a.wrapping_add(*b).wrapping_add(carry);
-                carry = (sum < *a || (carry > 0 && sum == *a)) as usize;
-                result.digits.push(sum);
-            }
+            for i in 0..max_len {
+                let a = if i < len1 { self.digits[i] } else { 0 };
+                let b = if i < len2 { rhs.digits[i] } else { 0 };
 
-            let longer_digits = if self.digits.len() > rhs.digits.len() {
-                &self.digits[rhs.digits.len()..]
-            } else {
-                &rhs.digits[self.digits.len()..]
-            };
+                let sum = a.wrapping_add(b).wrapping_add(carry);
+                carry = (sum < a || (carry > 0 && sum == a)) as usize;
+                result.push(sum);
 
-            for &a in longer_digits {
-                let sum = a.wrapping_add(carry);
-                carry = (sum < a) as usize;
-                result.digits.push(sum);
-            }
-
-            if carry > 0 {
-                result.digits.push(carry);
-            }
-
-            if result.is_zero() {
-                result.negative = false;
-            }
-
-            result
-        } else {
-            let (larger, smaller, negative) = if self.abs() >= rhs.abs() {
-                (&self, &rhs, self.negative)
-            } else {
-                (&rhs, &self, rhs.negative)
-            };
-
-            let mut result = BigInt::default();
-
-            let mut borrow = 0;
-            for (i, (a, b)) in larger.digits.iter().zip(smaller.digits.iter()).enumerate() {
-                let (sub, overflow) = a.overflowing_sub(*b + borrow);
-                borrow = if overflow { 1 } else { 0 };
-                result.digits.push(sub);
-                println!("Step {}: borrow: {}, result: {:?}", i, borrow, result.digits);
-            }
-
-            for (i, &a) in larger.digits.iter().skip(smaller.digits.len()).enumerate() {
-                let (sub, overflow) = a.overflowing_sub(borrow);
-                borrow = if overflow { 1 } else { 0 };
-                result.digits.push(sub);
-                println!("Step {}: borrow: {}, result: {:?}", i + smaller.digits.len(), borrow, result.digits);
-            }
-
-            // Handle case where borrow is still 1 after the loop
-            if borrow > 0 {
-                for (i, digit) in result.digits.iter_mut().rev().enumerate() {
-                    println!("Borrow step {}: {:?}", i, digit);
-                    if *digit == 0 {
-                        *digit = usize::MAX;
-                    } else {
-                        *digit = digit.wrapping_sub(1);
-                        break;
-                    }
+                if a == 0 && b == 0 && carry == 0 {
+                    break;
                 }
             }
 
-            println!("Result: {:?}", result.digits);
-
-            // Remove any trailing zeros
-            while result.digits.len() > 1 && *result.digits.last().unwrap() == 0 {
-                result.digits.pop();
+            if carry > 0 {
+                result.push(carry);
             }
 
-            if result.is_zero() {
-                result.negative = false;
+            // Remove leading zeros
+            while result.len() > 1 && *result.last().unwrap() == 0 {
+                result.pop();
+            }
+            result
+        } else {
+            Vec::new()
+        };
+
+        // If the result is zero, it should be positive
+        if result.len() == 1 && result[0] == 0 {
+            return Self::default();
+        } 
+        
+        Self {
+            digits: result,
+            negative: self.negative,
+        }
+    }
+}
+
+impl std::ops::Sub for BigInt {
+    type Output = Self;
+
+    fn sub(self, rhs: Self) -> Self {
+        let mut digits = Vec::new();
+        let mut carry = 0;
+        if self.negative == rhs.negative {
+            // Subtract the two numbers
+            for (a, b) in self.digits.iter().zip(&rhs.digits) {
+                let diff = a.wrapping_sub(*b).wrapping_sub(carry);
+                carry = (diff > *a || (carry > 0 && diff == *a)) as usize;
+                digits.push(diff);
+            }
+            Self {
+                digits,
+                negative: self.negative,
+            }
+        } else {
+            let result = if rhs.abs() > self.abs() {
+                rhs.abs() - self.abs()
             } else {
-                result.negative = negative;
-            }
-
+                self.abs() - rhs.abs()
+            };
             result
         }
     }
@@ -202,12 +196,7 @@ impl BigInt {
             negative: false,
         }
     }
-
-    fn is_zero(&self) -> bool {
-        self.digits.len() == 1 && self.digits[0] == 0
-    }
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -279,6 +268,13 @@ mod tests {
 
         let bigint = BigInt::from(1_000_000_000_000_000_000usize);
         assert_eq!(bigint.digits, vec![1000000000000000000]);
+        assert_eq!(bigint.negative, false);
+    }
+
+    #[test]
+    fn test_from_vec() {
+        let bigint = BigInt::from(vec![42, 42]);
+        assert_eq!(bigint.digits, vec![42, 42]);
         assert_eq!(bigint.negative, false);
     }
 
