@@ -191,57 +191,60 @@ impl std::ops::Add for BigInt {
             }
         } else {
             // Subtracting numbers with different signs
-            let (larger, smaller, negative) = if self.abs() >= rhs.abs() {
-                (
-                    &self,
-                    &rhs,
-                    self.negative,
-                )
+            if self.abs() >= rhs.abs() {
+                // Case 1: Positive larger - Negative smaller
+                // Case 2: Negative larger - Positive smaller
+                let (larger, smaller, negative) = (&self, &rhs, self.negative);
+                subtract_bigints(larger, smaller, negative, max_len)
             } else {
-                (
-                    &rhs,
-                    &self,
-                    rhs.negative,
-                )
-            };
-
-            let mut result = Vec::with_capacity(max_len);
-            let mut borrow = 0;
-
-            for i in 0..max_len {
-                let a = if i < length.0 { larger.digits[i] } else { 0 };
-                let b = if i < length.1 { smaller.digits[i] } else { 0 };
-
-                let (sub, overflow) = a.overflowing_sub(b.wrapping_add(borrow));
-                borrow = overflow as usize;
-                result.push(sub);
+                // Case 3: Positive smaller - Negative larger
+                // Case 4: Negative smaller - Positive larger
+                let (larger, smaller, negative) = (&rhs, &self, !rhs.negative);
+                subtract_bigints(larger, smaller, negative, max_len)
             }
+        }
+    }
+}
 
-            // Handle remaining borrow
-            if borrow > 0 {
-                for digit in result.iter_mut().rev() {
-                    if *digit == 0 {
-                        *digit = usize::MAX;
-                    } else {
-                        *digit = digit.wrapping_sub(1);
-                        break;
-                    }
-                }
-            }
+fn subtract_bigints(larger: &BigInt, smaller: &BigInt, negative: bool, max_len: usize) -> BigInt {
+    let len1 = larger.digits.len();
+    let len2 = smaller.digits.len();
 
-            // Remove leading zeros
-            while result.len() > 1 && *result.last().unwrap() == 0 {
-                result.pop();
-            }
+    let mut result = Vec::with_capacity(max_len);
+    let mut borrow = 0;
 
-            if result.len() == 1 && result[0] == 0 {
-                BigInt::default()
+    for i in 0..max_len {
+        let a = if i < len1 { larger.digits.get(i).copied().unwrap_or(0) } else { 0 };
+        let b = if i < len2 { smaller.digits.get(i).copied().unwrap_or(0) } else { 0 };
+
+        let (sub, overflow) = a.overflowing_sub(b.wrapping_add(borrow));
+        borrow = overflow as usize;
+        result.push(sub);
+    }
+
+    // Handle remaining borrow
+    if borrow > 0 {
+        for digit in result.iter_mut().rev() {
+            if *digit == 0 {
+                *digit = usize::MAX;
             } else {
-                BigInt {
-                    digits: result,
-                    negative: negative,
-                }
+                *digit = digit.wrapping_sub(1);
+                break;
             }
+        }
+    }
+
+    // Remove leading zeros
+    while result.len() > 1 && *result.last().unwrap() == 0 {
+        result.pop();
+    }
+
+    if result.len() == 1 && result[0] == 0 {
+        BigInt::default()
+    } else {
+        BigInt {
+            digits: result,
+            negative,
         }
     }
 }
