@@ -155,21 +155,24 @@ impl std::ops::Add for BigInt {
     type Output = Self;
 
     fn add(self, rhs: Self) -> Self {
+        let length = if self.digits.len() >= rhs.digits.len() {
+            (self.digits.len(), rhs.digits.len())
+        } else {
+            (rhs.digits.len(), self.digits.len())
+        };
+        let max_len = length.0.max(length.1);
         if self.negative == rhs.negative {
             // Adding numbers with the same sign
-            let len1 = self.digits.len();
-            let len2 = rhs.digits.len();
-            let max_len = len1.max(len2);
-
             let mut result = Vec::with_capacity(max_len);
             let mut carry = 0;
 
             for i in 0..max_len {
-                let a = if i < len1 { self.digits[i] } else { 0 };
-                let b = if i < len2 { rhs.digits[i] } else { 0 };
+                let a = if i < length.0 { self.digits[i] } else { 0 };
+                let b = if i < length.1 { rhs.digits[i] } else { 0 };
 
-                let sum = a.wrapping_add(b).wrapping_add(carry);
-                carry = (sum < a || (carry > 0 && sum == a)) as usize;
+                let (sum, overflow1) = a.overflowing_add(b);
+                let (sum, overflow2) = sum.overflowing_add(carry);
+                carry = (overflow1 || overflow2) as usize;
                 result.push(sum);
             }
 
@@ -188,23 +191,17 @@ impl std::ops::Add for BigInt {
             }
         } else {
             // Subtracting numbers with different signs
-            let (larger, smaller, negative, max_len, len1, len2) = if self.abs() >= rhs.abs() {
+            let (larger, smaller, negative) = if self.abs() >= rhs.abs() {
                 (
                     &self,
                     &rhs,
                     self.negative,
-                    self.digits.len(),
-                    self.digits.len(),
-                    rhs.digits.len(),
                 )
             } else {
                 (
                     &rhs,
                     &self,
                     rhs.negative,
-                    rhs.digits.len(),
-                    self.digits.len(),
-                    rhs.digits.len(),
                 )
             };
 
@@ -212,11 +209,11 @@ impl std::ops::Add for BigInt {
             let mut borrow = 0;
 
             for i in 0..max_len {
-                let a = if i < len1 { larger.digits[i] } else { 0 };
-                let b = if i < len2 { smaller.digits[i] } else { 0 };
+                let a = if i < length.0 { larger.digits[i] } else { 0 };
+                let b = if i < length.1 { smaller.digits[i] } else { 0 };
 
                 let (sub, overflow) = a.overflowing_sub(b.wrapping_add(borrow));
-                borrow = if overflow { 1 } else { 0 };
+                borrow = overflow as usize;
                 result.push(sub);
             }
 
@@ -259,9 +256,9 @@ impl BigInt {
     }
 }
 
-use std::ops::Neg;
 
-impl Neg for BigInt {
+
+impl std::ops::Neg for BigInt {
     type Output = Self;
 
     fn neg(mut self) -> Self {
@@ -450,6 +447,21 @@ mod tests {
         }
 
         #[test]
+        fn test_sub_with_borrow_due_to_max_value() {
+            let a = BigInt {
+                digits: vec![1],
+                negative: false,
+            };
+            let b = BigInt {
+                digits: vec![usize::MAX],
+                negative: true,
+            };
+            let difference = a + b;
+            assert_eq!(difference.digits, vec![2]);
+            assert_eq!(difference.negative, true);
+        }
+        
+        #[test]
         fn test_add_max_usize() {
             let a = BigInt::from(usize::MAX);
             let b = BigInt::from(usize::MAX);
@@ -603,6 +615,7 @@ mod tests {
 
     mod test_neg {
         use super::*;
+        use std::ops::Neg;
 
         #[test]
         fn test_neg_positive() {
